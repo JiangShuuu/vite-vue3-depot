@@ -11,8 +11,10 @@
     "@apollo/client": "^3.6.2",
     "@vue/apollo-composable": "^4.0.0-alpha.17",
     "@vue/apollo-util": "^4.0.0-alpha.17",
+    "@vueuse/integrations": "^8.5.0",
     "graphql": "^16.5.0",
     "graphql-tag": "^2.12.6",
+    "universal-cookie": "^4.0.4",
     "vue": "^3.2.25",
     "vue-apollo": "^3.1.0",
     "vue-router": "^4.0.15"

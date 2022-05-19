@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client/core"
 // import { onError } from "@apollo/client/link/error"
 import { setContext } from '@apollo/client/link/context';
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 // const errorLink = onError(({ graphQLErrors, networkError }) => {
 //   if (graphQLErrors)
@@ -12,14 +13,16 @@ import { setContext } from '@apollo/client/link/context';
 
 //   if (networkError) console.log(`[Network error]: ${networkError}`)
 // });
+const cookies = useCookies(['locale'])
 
 const authLink = setContext(async (_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const tokenExist = document.cookie.split('; ').find(row => row.startsWith('token='))
-  let token = ''
-  if (tokenExist) {
-    token = tokenExist.split('=')[1];
-  } else {
+  // const tokenExist = document.cookie.split('; ').find(row => row.startsWith('token='))
+
+  let token = cookies.get('token')
+  if (!token) {
+    // if (tokenExist)
+    // token = tokenExist.split('=')[1];
+
     const params = {
         'client-id': import.meta.env.VITE_WEB_CLIENT_ID,
         'client-secret': import.meta.env.VITE_WEB_CLIENT_SECRET,
@@ -31,8 +34,9 @@ const authLink = setContext(async (_, { headers }) => {
     const data = await response.json()
 
     token = `${data.token_type} ${data.access_token}`
-
-    document.cookie = `token=${data.token_type} ${data.access_token}`; "path='/'";`maxAge=${data.expires_in - 86400}`
+    
+    cookies.set('token', token, {path: '/', maxAge: data.expires_in - 86400})
+    // document.cookie = `token=${data.token_type} ${data.access_token}`; "path='/'";`maxAge=${data.expires_in - 86400}`
   }
 
   return {
